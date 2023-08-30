@@ -10,16 +10,16 @@ using namespace std;
 // generate pseudo random numbers
 int Random(int sides)
 {
-	mt19937 mt(time(nullptr));
+	std::random_device rd;  // a seed source for the random number engine
+	std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
+	std::uniform_int_distribution<> distrib(1, sides);
 
-	std::uniform_int_distribution<> dice{ 1, sides };
-
-	return dice(mt);
+	return distrib(gen);
 }
 
 // get the user string input and transforms into usabe dice data. 
 // the user inpute need to be a valide rpg tabletop dice format like 1d10 or 1d8+3 etc
-int Roll()
+void Roll()
 {
 	char ch;
 	cin.get(ch);                       
@@ -76,39 +76,60 @@ int Roll()
 
 	// checks what symbol was used to make the right operation.
 	int total = 0;
+	int individualResult[100] = { 0 };
 	switch (symbol[0])
 	{
 		case '+':
 			for (int i = 0; i < atoi(num); i++)
 			{
-				total += Random(atoi(faces));
+				int r = Random(atoi(faces));
+				total += r;
+				individualResult[i] = r;
 			}
 			total += atoi(modifier);
 			break;
 		case '-':
 			for (int i = 0; i < atoi(num); i++)
 			{
-				total += Random(atoi(faces));
+				int r = Random(atoi(faces));
+				total += r;
+				individualResult[i] = r;
 			}
 			total -= atoi(modifier);
 			break;
 		case '*':
 			for (int i = 0; i < atoi(num); i++)
 			{
-				total += Random(atoi(faces));
+				int r = Random(atoi(faces));
+				total += r;
+				individualResult[i] = r;
 			}
 			total *= atoi(modifier);
 			break;
 		case '/':
 			for (int i = 0; i < atoi(num); i++)
 			{
-				total += Random(atoi(faces));
+				int r = Random(atoi(faces));
+				total += r;
+				individualResult[i] = r;
 			}
 			total /= atoi(modifier);
 			break;
 	}
 
-	return total;
+	cout << "(";
+	int s = 0;
+	while  (individualResult[s] != 0)
+	{
+		cout << individualResult[s];
+		s++;
+
+		if (individualResult[s] != 0)
+		{
+			cout << ", ";
+		}
+	}
+	cout << ")" << symbol[0] << modifier << " Total Result = " << total;
 }
 
 int main()
@@ -117,7 +138,8 @@ int main()
 	cout << "Write some dice rool. Example 3d6 or 1d20+7: \n";
 	while (true)
 	{
-		cout << "Resul: " << Roll();
+		Roll();
+		cout << endl;
 		cout << endl;
 	}
 
